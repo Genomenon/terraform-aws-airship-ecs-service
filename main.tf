@@ -346,6 +346,8 @@ module "ecs_service" {
   # launch_type either EC2 or FARGATE
   launch_type = local.launch_type
 
+  enable_execute_command = var.enable_execute_command
+
   selected_task_definition = module.ecs_task_definition_selector.selected_task_definition_for_deployment
 
   # deployment_controller_type sets the deployment type

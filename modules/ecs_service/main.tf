@@ -26,6 +26,8 @@ resource "aws_ecs_service" "this" {
   deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
   health_check_grace_period_seconds  = local.lb_attached ? var.health_check_grace_period_seconds : null
 
+  enable_execute_command = var.enable_execute_command
+
   deployment_controller {
     type = var.deployment_controller_type
   }

@@ -53,6 +53,12 @@ variable "log_retention_in_days" {
   description = "Number of days for the cloudwatch logs for the containers to be retained"
 }
 
+variable "enable_execute_command" {
+  type        = bool
+  default     = false
+  description = "Enable running commands with AWS ECS Exec"
+}
+
 variable "cloudwatch_kms_key" {
   type        = string
   default     = ""

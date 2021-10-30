@@ -39,6 +39,11 @@ variable "container_name" {
 variable "container_port" {
 }
 
+# Whether to enable Amazon ECS Exec for the service
+variable "enable_execute_command" {
+  default = false
+}
+
 # scheduling_strategy defaults to Replica
 variable "scheduling_strategy" {
 }
