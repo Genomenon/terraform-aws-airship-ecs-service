@@ -1,5 +1,5 @@
 # To pretify the  use of this module externally we use maps. Downside of map-usage is that default variables are lost when only a part
-# of the map is being defined. This is mitigated by using an extra set of default_* variables 
+# of the map is being defined. This is mitigated by using an extra set of default_* variables
 
 variable "create" {
   type        = bool
@@ -242,6 +242,12 @@ variable "load_balancing_properties_cognito_user_pool_domain" {
   default     = ""
 }
 
+#variable "capacity_provider" {
+#  type = string
+#  description = "capacity_provider sets the service's capacity provider strategy"
+#  default = null
+#}
+
 variable "capacity_properties_desired_capacity" {
   type        = number
   description = "capacity_properties_desired_capacity is the desired amount of tasks for a service, when autoscaling is used desired_capacity is only used initially"
@@ -355,14 +361,14 @@ Scaling properties holds a map of multiple maps defining scaling policies and al
  [{
     # type is the metric the metric being used for the service
     type               = "CPUUtilization"
-    
+
     # direction defines the direction of the scaling, up means more tasks, down is less tasks
     direction          = "up"
 
     # evaluation_periods how many observation points are needed for a scaling decision
     evaluation_periods = "2"
 
-    
+
     # observation_period is the number of seconds one statistic is measured
     observation_period = "300"
 
@@ -381,7 +387,7 @@ Scaling properties holds a map of multiple maps defining scaling policies and al
     # scaling_adjustment defines the amount to scale, can be a postive or negative number or percentage
     scaling_adjustment = "1"
   },]
-  
+
 EOF
 
 
@@ -392,7 +398,7 @@ variable "container_envvars" {
   description = <<EOF
 container_envvars defines extra container env vars, list of maps:
 { key = val,key2= val2}
-  
+
 EOF
 
 
@@ -479,6 +485,12 @@ variable "docker_volume" {
   # }
 }
 
+variable "efs_volume" {
+  type = map(string)
+  default = null
+  description = "An EFS volume to add to the task"
+}
+
 variable "host_path_volumes" {
   type        = list(map(string))
   default     = []
@@ -498,7 +510,7 @@ variable "mountpoints" {
   type        = list(map(string))
   default     = []
   description = "list of mount points to add to every container in the task"
-  ## Example 
+  ## Example
   # mountpoints = [{
   #   sourceVolume = "foo",
   #   containerPath = "/foo",
@@ -518,8 +530,8 @@ ecs_cron_tasks holds a list of maps defining the scheduled jobs which need to ru
  [{
     # name of the scheduled task
     job_name  = "vacuum_db"
-    
-    # expression defined in 
+
+    # expression defined in
     # http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
     schedule_expression  = "cron(0 12 * * ? *)"
 
@@ -527,7 +539,7 @@ ecs_cron_tasks holds a list of maps defining the scheduled jobs which need to ru
     command = "python vacuum_db.py"
 
   },]
-  
+
 EOF
 
   type    = list(map(string))
@@ -538,8 +550,8 @@ EOF
   #  ecs_cron_tasks = [{
   #     # name of the scheduled task
   #     job_name  = "vacuum_db"
-  #     
-  #     # expression defined in 
+  #
+  #     # expression defined in
   #     # http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
   #     schedule_expression  = "cron(0 12 * * ? *)"
   #
@@ -617,7 +629,7 @@ variable "container_ulimit_hard_limit" {
 
 variable "is_scheduled_task" {
   description = <<EOF
-When this is enabled, any load balancer- and autoscaling settings are ignored, and no ECS service is created. 
+When this is enabled, any load balancer- and autoscaling settings are ignored, and no ECS service is created.
 Instead, a scheduled task is created using the task defintion and the 'scheduled_task_*' settings.
 EOF
 

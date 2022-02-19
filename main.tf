@@ -1,5 +1,12 @@
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 1.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.14.0"
+    }
+  }
 }
 
 locals {
@@ -109,7 +116,7 @@ module "alb_handling" {
   # nlb_listener_port sets the listener port of the nlb listener
   nlb_listener_port = var.load_balancing_properties_nlb_listener_port
 
-  # target_group_port sets the port of the target group, by default 80 
+  # target_group_port sets the port of the target group, by default 80
   target_group_port = var.load_balancing_properties_target_group_port
 
   # unhealthy_threshold defines the threashold for the target_group after which a service is seen as unhealthy.
@@ -253,7 +260,7 @@ module "container_definition" {
 
 #
 # The ecs_task_definition sub-module creates the ECS Task definition
-# 
+#
 module "ecs_task_definition" {
   source = "./modules/ecs_task_definition/"
 
@@ -266,7 +273,7 @@ module "ecs_task_definition" {
 
   container_definitions = module.container_definition.json
 
-  # awsvpc_enabled sets if the ecs task definition is awsvpc 
+  # awsvpc_enabled sets if the ecs task definition is awsvpc
   awsvpc_enabled = var.awsvpc_enabled
 
   # fargate_enabled sets if the ecs task definition has launch_type FARGATE
@@ -287,11 +294,13 @@ module "ecs_task_definition" {
   # Launch type, either EC2 or FARGATE
   launch_type = local.launch_type
 
-  # region, needed for Logging.. 
+  # region, needed for Logging..
   region = var.region
 
   # a Docker volume to add to the task
   docker_volume = var.docker_volume
+
+  efs_volume = var.efs_volume
 
   # list of host paths to add as volumes to the task
   host_path_volumes = var.host_path_volumes
@@ -330,7 +339,7 @@ module "ecs_task_definition_selector" {
 
 #
 # The ecs_service sub-module creates the ECS Service
-# 
+#
 module "ecs_service" {
   source = "./modules/ecs_service/"
 
@@ -386,7 +395,7 @@ module "ecs_service" {
   # with_placement_strategy, if true spread tasks over ECS Cluster based on AZ, Instance-id, Memory
   with_placement_strategy = var.with_placement_strategy
 
-  # container_name sets the name of the container, this is used for the load balancer section inside the ecs_service to connect to a container_name defined inside the 
+  # container_name sets the name of the container, this is used for the load balancer section inside the ecs_service to connect to a container_name defined inside the
   # task definition, container_port sets the port for the same container.
   container_name = var.container_name
 
@@ -444,7 +453,7 @@ module "ecs_autoscaling" {
   tags = local.tags
 }
 
-# This modules creates scheduled tasks for the ecs service. This is not the same as ECS scheduled tasks! 
+# This modules creates scheduled tasks for the ecs service. This is not the same as ECS scheduled tasks!
 # Instead it runs a command inside an existing task, similar to a cron job on that task.
 module "lambda_ecs_task_scheduler" {
   source = "./modules/lambda_ecs_task_scheduler/"

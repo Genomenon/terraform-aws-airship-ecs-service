@@ -68,6 +68,11 @@ variable "docker_volume" {
   # }
 }
 
+variable "efs_volume" {
+  type = map(string)
+  default = {}
+}
+
 # list of host paths to add as volumes to the task
 variable "host_path_volumes" {
   type    = list(map(string))

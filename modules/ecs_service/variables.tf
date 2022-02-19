@@ -31,6 +31,12 @@ variable "launch_type" {
 variable "desired_capacity" {
 }
 
+#variable "capacity_provider" {
+#  type = string
+#  description = "capacity_provider sets the service's capacity provider strategy"
+#  default = null
+#}
+
 # The container name
 variable "container_name" {
 }
