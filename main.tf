@@ -279,6 +279,9 @@ module "ecs_task_definition" {
   # fargate_enabled sets if the ecs task definition has launch_type FARGATE
   fargate_enabled = var.fargate_enabled
 
+  # Sets the CPU architecture for Fargate
+  cpu_architecture = var.cpu_architecture
+
   # Sets the task cpu needed for fargate when enabled
   cpu = var.fargate_enabled ? var.container_cpu : ""
 

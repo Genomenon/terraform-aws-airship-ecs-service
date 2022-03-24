@@ -12,8 +12,12 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn = var.ecs_task_execution_role_arn
 
   # Used for Fargate
-  cpu    = var.cpu
-  memory = var.memory
+  cpu              = var.cpu
+  memory           = var.memory
+
+  runtime_platform {
+      cpu_architecture = var.cpu_architecture
+  }
 
   dynamic "volume" {
     for_each = var.host_path_volumes
@@ -74,6 +78,10 @@ resource "aws_ecs_task_definition" "app_with_docker_volume" {
   # Used for Fargate
   cpu    = var.cpu
   memory = var.memory
+
+  runtime_platform {
+      cpu_architecture = var.cpu_architecture
+  }
 
   dynamic "volume" {
     for_each = var.host_path_volumes

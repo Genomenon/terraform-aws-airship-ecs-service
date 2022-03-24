@@ -25,6 +25,10 @@ variable "fargate_enabled" {
 variable "container_definitions" {
 }
 
+variable "cpu_architecture" {
+  default     = "X86_64"
+}
+
 # cpu is set in case Fargate is used
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
 variable "cpu" {

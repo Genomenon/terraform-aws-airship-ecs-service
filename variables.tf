@@ -305,6 +305,11 @@ variable "container_name" {
   default     = "app"
 }
 
+variable "cpu_architecture" {
+  description = "CPU architecture for Fargate, X86_64 or ARM64"
+  default     = "X86_64"
+}
+
 variable "container_cpu" {
   description = "cpu defines the needed cpu for the container"
 }
