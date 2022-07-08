@@ -5,3 +5,6 @@ output "ecs_service_name" {
   value = join("", aws_ecs_service.this.*.name)
 }
 
+output "ecs_service_arn" {
+  value = join("", aws_ecs_service.this.*.id)
+}

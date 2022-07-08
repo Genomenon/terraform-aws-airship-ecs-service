@@ -6,6 +6,14 @@ output "ecs_taskrole_name" {
   value = module.iam.ecs_taskrole_name
 }
 
+output "ecs_service_name" {
+  value = module.ecs_service.ecs_service_name
+}
+
+output "ecs_service_arn" {
+  value = module.ecs_service.ecs_service_arn
+}
+
 output "lb_target_group_arn" {
   value = module.alb_handling.lb_target_group_arn
 }
