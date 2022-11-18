@@ -63,6 +63,28 @@ resource "aws_iam_role" "ecs_tasks_role" {
   tags               = var.tags
 }
 
+# Policy Document to allow ECS Execute Command
+data "aws_iam_policy_document" "execute_command" {
+  statement {
+    sid = "1"
+    effect = "Allow"
+    actions = [
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "execute_command" {
+  count = var.enable_execute_command ? 1 : 0
+  name = "${var.name}-execute-command"
+  role = aws_iam_role.ecs_tasks_role[0].id
+  policy = data.aws_iam_policy_document.execute_command.json
+}
+
 # Policy Document to allow KMS Decryption with given keys
 data "aws_iam_policy_document" "kms_permissions" {
   count = var.create && var.kms_enabled ? 1 : 0

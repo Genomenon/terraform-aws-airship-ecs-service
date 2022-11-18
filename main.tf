@@ -68,6 +68,10 @@ module "iam" {
   # containing credentials for an external Docker repo
   secretsmanager_secret_arns = local.secret_arns
 
+  # enable_execute_command sets whether the ECS Execute Command functionality is enabled,
+  # in which case we need to provide the appropriate permissions.
+  enable_execute_command = var.enable_execute_command
+
   # s3_ro_paths define which paths on S3 can be accessed from the ecs service in read-only fashion.
   s3_ro_paths = var.s3_ro_paths
 

@@ -17,6 +17,10 @@ variable "fargate_enabled" {
   default = false
 }
 
+variable "enable_execute_command" {
+  default = false
+}
+
 variable "kms_enabled" {
   description = "Whether to provide access to the supplied kms_keys. If no kms keys are passed, set this to false."
   default     = false
