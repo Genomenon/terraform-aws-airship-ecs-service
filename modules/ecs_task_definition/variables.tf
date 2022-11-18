@@ -39,6 +39,10 @@ variable "cpu" {
 variable "memory" {
 }
 
+variable "ephemeral_storage_gib" {
+  type = number
+}
+
 # ecs_taskrole_arn sets the arn of the ECS Task role
 variable "ecs_taskrole_arn" {
 }

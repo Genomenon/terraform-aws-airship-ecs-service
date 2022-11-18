@@ -318,6 +318,12 @@ variable "container_memory" {
   description = "container_memory  defines the hard memory limit of the container"
 }
 
+variable "container_ephemeral_storage" {
+  description = "container_ephemeral_storage defines the Fargate ephemeral storage for the container"
+  type = number
+  default = null
+}
+
 variable "container_docker_labels" {
   default = {}
 }

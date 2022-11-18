@@ -288,6 +288,9 @@ module "ecs_task_definition" {
   # Sets the task memory which is mandatory for Fargate, option for EC2
   memory = var.fargate_enabled ? var.container_memory : ""
 
+  # Sets the ephemeral storage for Fargate
+  ephemeral_storage_gib = var.fargate_enabled ? var.container_ephemeral_storage : null
+
   # ecs_taskrole_arn sets the IAM role of the task.
   ecs_taskrole_arn = module.iam.ecs_taskrole_arn
 

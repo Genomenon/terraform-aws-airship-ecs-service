@@ -19,6 +19,13 @@ resource "aws_ecs_task_definition" "app" {
       cpu_architecture = var.cpu_architecture
   }
 
+  dynamic "ephemeral_storage" {
+    for_each = var.ephemeral_storage_gib != null ? [var.ephemeral_storage_gib] : []
+    content {
+      size_in_gib = var.ephemeral_storage_gib
+    }
+  }
+
   dynamic "volume" {
     for_each = var.host_path_volumes
     content {
