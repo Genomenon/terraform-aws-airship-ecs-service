@@ -116,12 +116,6 @@ variable "load_balancing_properties_custom_listen_hosts" {
   type        = list(string)
 }
 
-variable "load_balancing_properties_custom_listen_hosts_count" {
-  type        = number
-  description = "necessary count for the load_balancing_properties_custom_listen_hosts"
-  default     = 0
-}
-
 variable "load_balancing_properties_redirect_http_to_https" {
   type        = bool
   description = "Redirect http to https instead of serving http"

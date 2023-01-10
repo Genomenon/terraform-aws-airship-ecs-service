@@ -127,10 +127,6 @@ variable "custom_listen_hosts" {
   default = []
 }
 
-variable "custom_listen_hosts_count" {
-  default = "0"
-}
-
 # When http is enabled we create http listener_rules
 variable "http_enabled" {
   default = true

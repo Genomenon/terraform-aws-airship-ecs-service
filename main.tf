@@ -153,8 +153,6 @@ module "alb_handling" {
   # custom_listen_hosts will be added as a host route rule as aws_lb_listener_rule to the given service e.g. www.domain.com -> Service
   custom_listen_hosts = var.load_balancing_properties_custom_listen_hosts
 
-  custom_listen_hosts_count = var.load_balancing_properties_custom_listen_hosts_count
-
   # redirect_http_to_https creates lb listeners which redirect incoming http traffic to https
   redirect_http_to_https = var.load_balancing_properties_redirect_http_to_https
 
