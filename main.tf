@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.14"
+      version = "~> 5.53"
     }
   }
 }
@@ -25,8 +25,8 @@ locals {
 #
 locals {
   # ARNs for any Secrets Manager secrets used for container secrets
-  config_secret_arns = flatten([for val in values(var.container_secrets):
-                                regexall("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]+:secret:.+", val)])
+  config_secret_arns = flatten([for val in values(var.container_secrets) :
+  regexall("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]+:secret:.+", val)])
   # above plus the credentials secret ARN, if any
   secret_arns = compact(flatten(concat(local.config_secret_arns, [var.repository_credentials_secret_arn])))
 }
@@ -521,4 +521,3 @@ resource "aws_cloudwatch_event_target" "scheduled_task" {
     }
   }
 }
-
