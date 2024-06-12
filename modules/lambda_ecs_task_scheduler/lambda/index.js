@@ -1,56 +1,81 @@
-const AWS = require("aws-sdk");
-const ecs = new AWS.ECS();
+const {
+  ECSClient,
+  DescribeServicesCommand,
+  DescribeTaskDefinitionCommand,
+  RunTaskCommand,
+} = require("@aws-sdk/client-ecs");
+
+const ecsClient = new ECSClient();
 
 exports.handler = async (event, context, callback) => {
-    const ecs_cluster = event.ecs_cluster;
-    const ecs_service = event.ecs_service;
+  const ecs_cluster = event.ecs_cluster;
+  const ecs_service = event.ecs_service;
 
-    const services =
-        await ecs
-        .describeServices({
-            cluster: ecs_cluster,
-            services: [ecs_service]
-        })
-        .promise();
+  try {
+    const servicesResponse = await ecsClient.send(
+      new DescribeServicesCommand({
+        cluster: ecs_cluster,
+        services: [ecs_service],
+      }),
+    );
 
-    if (services.services.length > 1) {
-        throw new Error(`multiple services with name ${ecs_service} found in cluster ${ecs_cluster}`);
+    const services = servicesResponse.services;
+
+    if (services.length > 1) {
+      throw new Error(
+        `Multiple services with name ${ecs_service} found in cluster ${ecs_cluster}`,
+      );
     }
-    if (services.services.length < 1) {
-        throw new Error("Could not find service");
+    if (services.length < 1) {
+      throw new Error("Could not find service");
     }
 
-    const task_family_revision = services.services[0].taskDefinition;
+    const task_family_revision = services[0].taskDefinition;
 
-    const taskDefinition =
-        await ecs.describeTaskDefinition({
-            taskDefinition: task_family_revision
-        })
-        .promise();
+    const taskDefinitionResponse = await ecsClient.send(
+      new DescribeTaskDefinitionCommand({
+        taskDefinition: task_family_revision,
+      }),
+    );
 
-    if (taskDefinition.taskDefinition.containerDefinitions.length !== 1) {
-        throw new Error("only a single container is supported per task definition");
+    const taskDefinition = taskDefinitionResponse.taskDefinition;
+
+    if (taskDefinition.containerDefinitions.length !== 1) {
+      throw new Error(
+        "Only a single container is supported per task definition",
+      );
     }
 
     const started_by = event.started_by;
-
-    const networkConfiguration = services.services[0].networkConfiguration;
-    const launchType = services.services[0].launchType;
+    const networkConfiguration = services[0].networkConfiguration;
+    const launchType = services[0].launchType;
 
     const params = {
-        taskDefinition: task_family_revision,
-        networkConfiguration: networkConfiguration,
-        cluster: ecs_cluster,
-        count: 1,
-        launchType: launchType,
-        startedBy: started_by,
-        overrides: event.overrides
+      taskDefinition: task_family_revision,
+      networkConfiguration: networkConfiguration,
+      cluster: ecs_cluster,
+      count: 1,
+      launchType: launchType,
+      startedBy: started_by,
+      overrides: event.overrides,
     };
-    try {
-        const data = await ecs.runTask(params).promise();
-        console.log("Successfully started taskDefinition " + task_family_revision + "\n" + JSON.stringify(data));
-        callback(null, "Successfully started taskDefinition " + task_family_revision + "\n" + JSON.stringify(data));
-    } catch (err) {
-        callback(err);
-    }
+
+    const data = await ecsClient.send(new RunTaskCommand(params));
+
+    console.log(
+      "Successfully started taskDefinition " +
+        task_family_revision +
+        "\n" +
+        JSON.stringify(data),
+    );
+    callback(
+      null,
+      "Successfully started taskDefinition " +
+        task_family_revision +
+        "\n" +
+        JSON.stringify(data),
+    );
+  } catch (err) {
+    callback(err);
+  }
 };
