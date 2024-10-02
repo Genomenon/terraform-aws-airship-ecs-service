@@ -314,8 +314,8 @@ variable "container_memory" {
 
 variable "container_ephemeral_storage" {
   description = "container_ephemeral_storage defines the Fargate ephemeral storage for the container"
-  type = number
-  default = null
+  type        = number
+  default     = null
 }
 
 variable "container_docker_labels" {
@@ -356,7 +356,7 @@ variable "host_port" {
 
 variable "extra_ports" {
   description = "Port mappings to apply besides the default"
-  default = []
+  default     = []
 }
 
 variable "scaling_properties" {
@@ -373,6 +373,8 @@ Scaling properties holds a map of multiple maps defining scaling policies and al
     # evaluation_periods how many observation points are needed for a scaling decision
     evaluation_periods = "2"
 
+    # namespace defines the namespace of the alarm
+    namespace          = "AWS/ECS"
 
     # observation_period is the number of seconds one statistic is measured
     observation_period = "300"
@@ -389,8 +391,17 @@ Scaling properties holds a map of multiple maps defining scaling policies and al
     # Adjustment_type defines the type of adjustment, can either be absolute or relative : ChangeInCapacity, ExactCapacity, and PercentChangeInCapacity.
     adjustment_type    = "ChangeInCapacity"
 
+    # aggregation_type sets the method by which data points are aggregated
+    aggregation_type    = "Average"
+
     # scaling_adjustment defines the amount to scale, can be a postive or negative number or percentage
     scaling_adjustment = "1"
+
+    # dimensions are metrics dimensions for the metric
+    dimensions = {
+      ServiceName = var.name
+      ClusterName = var.ecs_cluster_id
+    }
   },]
 
 EOF
@@ -491,8 +502,8 @@ variable "docker_volume" {
 }
 
 variable "efs_volume" {
-  type = map(string)
-  default = null
+  type        = map(string)
+  default     = null
   description = "An EFS volume to add to the task"
 }
 
