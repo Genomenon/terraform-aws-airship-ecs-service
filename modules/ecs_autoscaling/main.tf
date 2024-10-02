@@ -12,7 +12,7 @@ resource "aws_appautoscaling_target" "target" {
 }
 
 resource "aws_appautoscaling_policy" "policy" {
-  count = var.create ? 1 : 0 * length(var.scaling_properties)
+  count = var.create ? length(var.scaling_properties) : 0
 
   name = "${local.cluster_plus_service_name}-${var.scaling_properties[count.index]["type"]}-${element(
     var.direction[var.scaling_properties[count.index]["direction"]],
@@ -38,7 +38,7 @@ resource "aws_appautoscaling_policy" "policy" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "alarm" {
-  count = var.create ? 1 : 0 * length(var.scaling_properties)
+  count = var.create ? length(var.scaling_properties) : 0
 
   alarm_name = "${local.cluster_plus_service_name}-${var.scaling_properties[count.index]["type"]}-${element(
     var.direction[var.scaling_properties[count.index]["direction"]],
