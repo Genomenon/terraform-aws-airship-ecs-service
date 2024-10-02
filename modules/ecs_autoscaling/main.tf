@@ -25,7 +25,7 @@ resource "aws_appautoscaling_policy" "policy" {
   step_scaling_policy_configuration {
     adjustment_type         = var.scaling_properties[count.index]["adjustment_type"]
     cooldown                = var.scaling_properties[count.index]["cooldown"]
-    metric_aggregation_type = coalesce(var.scaling_properties[count.index]["aggregation_type"], "Average")
+    metric_aggregation_type = lookup(var.scaling_properties[count.index], "aggregation_type", "Average")
 
     step_adjustment {
       metric_interval_lower_bound = var.scaling_properties[count.index]["scaling_adjustment"] == "-1" ? "" : "0"
@@ -52,15 +52,15 @@ resource "aws_cloudwatch_metric_alarm" "alarm" {
 
   evaluation_periods = var.scaling_properties[count.index]["evaluation_periods"]
   metric_name        = var.scaling_properties[count.index]["type"]
-  namespace          = coalesce(var.scaling_properties[count.index]["namespace"], "AWS/ECS")
+  namespace          = lookup(var.scaling_properties[count.index], "namespace", "AWS/ECS")
   period             = var.scaling_properties[count.index]["observation_period"]
   statistic          = var.scaling_properties[count.index]["statistic"]
   threshold          = var.scaling_properties[count.index]["threshold"]
 
-  dimensions = coalesce(var.scaling_properties[count.index]["dimentions"], {
+  dimensions = jsondecode(lookup(var.scaling_properties[count.index], "dimensions", jsonencode({
     ClusterName = var.cluster_name
     ServiceName = var.ecs_service_name
-  })
+  })))
 
   alarm_actions = [aws_appautoscaling_policy.policy[count.index].arn]
 
