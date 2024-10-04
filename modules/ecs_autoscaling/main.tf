@@ -17,7 +17,7 @@ resource "aws_appautoscaling_policy" "policy" {
   name = "${local.cluster_plus_service_name}-${var.scaling_properties[count.index]["type"]}-${element(
     var.direction[var.scaling_properties[count.index]["direction"]],
     1,
-  )}"
+  )}-V${count.index}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${var.ecs_service_name}"
@@ -43,7 +43,7 @@ resource "aws_cloudwatch_metric_alarm" "alarm" {
   alarm_name = "${local.cluster_plus_service_name}-${var.scaling_properties[count.index]["type"]}-${element(
     var.direction[var.scaling_properties[count.index]["direction"]],
     1,
-  )}"
+  )}-V${count.index}"
 
   comparison_operator = element(
     var.direction[var.scaling_properties[count.index]["direction"]],
