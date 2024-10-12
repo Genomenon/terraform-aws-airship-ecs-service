@@ -66,7 +66,7 @@ resource "aws_iam_role" "ecs_tasks_role" {
 # Policy Document to allow ECS Execute Command
 data "aws_iam_policy_document" "execute_command" {
   statement {
-    sid = "1"
+    sid    = "1"
     effect = "Allow"
     actions = [
       "ssmmessages:CreateControlChannel",
@@ -79,9 +79,9 @@ data "aws_iam_policy_document" "execute_command" {
 }
 
 resource "aws_iam_role_policy" "execute_command" {
-  count = var.enable_execute_command ? 1 : 0
-  name = "${var.name}-execute-command"
-  role = aws_iam_role.ecs_tasks_role[0].id
+  count  = var.enable_execute_command ? 1 : 0
+  name   = "${var.name}-execute-command"
+  role   = aws_iam_role.ecs_tasks_role[0].id
   policy = data.aws_iam_policy_document.execute_command.json
 }
 
@@ -159,7 +159,7 @@ data "aws_iam_policy_document" "sm_secrets" {
   statement {
     effect    = "Allow"
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [for arn in var.secretsmanager_secret_arns: "${arn}-??????"]
+    resources = [for arn in var.secretsmanager_secret_arns : "${arn}-??????"]
   }
 }
 
@@ -218,6 +218,55 @@ resource "aws_iam_role_policy" "s3_ro_permissions" {
   name   = "s3-readonly-policy"
   role   = aws_iam_role.ecs_tasks_role[0].id
   policy = data.aws_iam_policy_document.s3_ro_permissions[0].json
+}
+
+### SQS
+
+# Policy Document to allow SQS Send Access to given queues
+data "aws_iam_policy_document" "sqs_send_permissions" {
+  count = var.create ? 1 : 0
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:GetQueueAttributes",
+      "sqs:SendMessage",
+      "sqs:GetQueueUrl"
+    ]
+    resources = formatlist("arn:aws:sqs:${var.region}:${data.aws_caller_identity.current[0].account_id}:%s", var.sqs_send_queues)
+  }
+}
+
+# Policy Document to allow SQS Receive Access to given queues
+data "aws_iam_policy_document" "sqs_receive_permissions" {
+  count = var.create ? 1 : 0
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl"
+    ]
+    resources = formatlist("arn:aws:sqs:${var.region}:${data.aws_caller_identity.current[0].account_id}:%s", var.sqs_receive_queues)
+  }
+}
+
+# Add the SQS Read-Write policy to the task role
+resource "aws_iam_role_policy" "sqs_send_permissions" {
+  name   = "sqs-send-policy"
+  count  = var.create && length(var.sqs_send_queues) > 0 ? 1 : 0
+  role   = aws_iam_role.ecs_tasks_role[0].id
+  policy = data.aws_iam_policy_document.sqs_send_permissions[0].json
+}
+
+# Add the SQS Read-Only policy to the task role
+resource "aws_iam_role_policy" "sqs_receive_permissions" {
+  count  = var.create && length(var.sqs_receive_queues) > 0 ? 1 : 0
+  name   = "sqs-receive-policy"
+  role   = aws_iam_role.ecs_tasks_role[0].id
+  policy = data.aws_iam_policy_document.sqs_receive_permissions[0].json
 }
 
 ### Lambdas
@@ -296,7 +345,7 @@ resource "aws_iam_role" "lambda_lookup" {
   name               = "ecs-lambda-lookup-${var.name}"
   description        = "Role permitting Lambda functions to be invoked from Lambda"
   assume_role_policy = data.aws_iam_policy_document.lambda_trust_policy.json
-  tags = var.tags
+  tags               = var.tags
 }
 
 resource "aws_iam_role_policy" "lambda_lookup_policy" {
@@ -441,4 +490,3 @@ resource "aws_iam_role_policy" "scheduled_task_cloudwatch_policy" {
   role   = aws_iam_role.scheduled_task_cloudwatch[0].id
   policy = data.aws_iam_policy_document.scheduled_task_cloudwatch_policy[0].json
 }
-

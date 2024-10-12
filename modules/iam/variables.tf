@@ -48,7 +48,7 @@ variable "secretsmanager_enabled" {
 
 variable "secretsmanager_secret_arns" {
   description = "ARNs of Secrets Manager secrets to allow access to"
-  default = []
+  default     = []
 }
 
 variable "s3_ro_paths" {
@@ -61,6 +61,16 @@ variable "s3_rw_paths" {
   default     = []
 }
 
+variable "sqs_send_queues" {
+  description = "SQS Send queues the Task has access to."
+  default     = []
+}
+
+variable "sqs_receive_queues" {
+  description = "SQS Receive queues the Task has access to."
+  default     = []
+}
+
 variable "is_scheduled_task" {
   description = "If true, this not a service, but a schedulked task."
   default     = false
@@ -68,7 +78,7 @@ variable "is_scheduled_task" {
 
 variable "task_scheduler_enabled" {
   description = "Whether to create a role for the Lambda-based task scheduler"
-  default = true
+  default     = true
 }
 
 variable "tags" {
