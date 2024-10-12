@@ -20,6 +20,32 @@
 #       as the top-level 'repository_credentials_secret_arn' parameter
 #       and any container secrets specified as Secrets Manager ARNs.
 
+locals {
+  sqs_send_queues_arns = [
+    for queue in var.sqs_send_queues : (
+      strcontains(queue, "arn:aws:sqs:") ? queue : format("arn:aws:sqs:${var.region}:${data.aws_caller_identity.current[0].account_id}:%s", queue)
+    )
+  ]
+
+  sqs_receive_queues_arns = [
+    for queue in var.sqs_receive_queues : (
+      strcontains(queue, "arn:aws:sqs:") ? queue : format("arn:aws:sqs:${var.region}:${data.aws_caller_identity.current[0].account_id}:%s", queue)
+    )
+  ]
+
+  s3_rw_paths_arns = [
+    for path in var.s3_rw_paths : (
+      strcontains(path, "arn:aws:s3:::") ? path : format("arn:aws:s3:::%s", path)
+    )
+  ]
+
+  s3_ro_paths_arns = [
+    for path in var.s3_ro_paths : (
+      strcontains(path, "arn:aws:s3:::") ? path : format("arn:aws:s3:::%s", path)
+    )
+  ]
+}
+
 # We need the AWS Account ID for the SSM Permissions
 data "aws_caller_identity" "current" {
   count = var.create ? 1 : 0
@@ -177,13 +203,13 @@ data "aws_iam_policy_document" "s3_rw_permissions" {
   statement {
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
-    resources = formatlist("arn:aws:s3:::%s", var.s3_rw_paths)
+    resources = local.s3_rw_paths_arns
   }
 
   statement {
     effect    = "Allow"
     actions   = ["s3:*"]
-    resources = formatlist("arn:aws:s3:::%s/*", var.s3_rw_paths)
+    resources = [for arn in local.s3_rw_paths_arns : "${arn}/*"]
   }
 }
 
@@ -194,13 +220,13 @@ data "aws_iam_policy_document" "s3_ro_permissions" {
   statement {
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
-    resources = formatlist("arn:aws:s3:::%s", var.s3_ro_paths)
+    resources = local.s3_ro_paths_arns
   }
 
   statement {
     effect    = "Allow"
     actions   = ["s3:GetObject"]
-    resources = formatlist("arn:aws:s3:::%s/*", var.s3_ro_paths)
+    resources = [for arn in local.s3_ro_paths_arns : "${arn}/*"]
   }
 }
 
@@ -233,7 +259,7 @@ data "aws_iam_policy_document" "sqs_send_permissions" {
       "sqs:SendMessage",
       "sqs:GetQueueUrl"
     ]
-    resources = formatlist("arn:aws:sqs:${var.region}:${data.aws_caller_identity.current[0].account_id}:%s", var.sqs_send_queues)
+    resources = local.sqs_send_queues_arns
   }
 }
 
@@ -249,7 +275,7 @@ data "aws_iam_policy_document" "sqs_receive_permissions" {
       "sqs:GetQueueAttributes",
       "sqs:GetQueueUrl"
     ]
-    resources = formatlist("arn:aws:sqs:${var.region}:${data.aws_caller_identity.current[0].account_id}:%s", var.sqs_receive_queues)
+    resources = local.sqs_receive_queues_arns
   }
 }
 
