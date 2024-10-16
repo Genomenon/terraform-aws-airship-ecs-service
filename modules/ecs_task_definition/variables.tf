@@ -26,7 +26,7 @@ variable "container_definitions" {
 }
 
 variable "cpu_architecture" {
-  default     = "X86_64"
+  default = "X86_64"
 }
 
 # cpu is set in case Fargate is used
@@ -77,7 +77,7 @@ variable "docker_volume" {
 }
 
 variable "efs_volume" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 
@@ -106,4 +106,10 @@ variable "tags" {
   description = "A map of tags to apply to all taggable resources"
   type        = map(string)
   default     = {}
+}
+
+variable "track_latest" {
+  description = "Whether should track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state. Default is `false`. Useful in the event the task definition is modified outside of this resource."
+  type        = bool
+  default     = false
 }

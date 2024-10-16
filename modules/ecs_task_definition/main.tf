@@ -12,11 +12,11 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn = var.ecs_task_execution_role_arn
 
   # Used for Fargate
-  cpu              = var.cpu
-  memory           = var.memory
+  cpu    = var.cpu
+  memory = var.memory
 
   runtime_platform {
-      cpu_architecture = var.cpu_architecture
+    cpu_architecture = var.cpu_architecture
   }
 
   dynamic "ephemeral_storage" {
@@ -51,10 +51,10 @@ resource "aws_ecs_task_definition" "app" {
       name = var.efs_volume["name"]
 
       efs_volume_configuration {
-          file_system_id = lookup(var.efs_volume, "file_system_id", null)
-          root_directory = lookup(var.efs_volume, "root_directory", null)
-          transit_encryption = lookup(var.efs_volume, "transit_encryption", null)
-          transit_encryption_port = lookup(var.efs_volume, "transit_encryption_port", null)
+        file_system_id          = lookup(var.efs_volume, "file_system_id", null)
+        root_directory          = lookup(var.efs_volume, "root_directory", null)
+        transit_encryption      = lookup(var.efs_volume, "transit_encryption", null)
+        transit_encryption_port = lookup(var.efs_volume, "transit_encryption_port", null)
       }
     }
   }
@@ -67,6 +67,10 @@ resource "aws_ecs_task_definition" "app" {
   requires_compatibilities = [var.launch_type]
 
   tags = var.tags
+
+  # track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state
+  # Useful in the event the task definition is modified outside of this resource
+  track_latest = var.track_latest
 
   lifecycle {
     create_before_destroy = true
@@ -87,7 +91,7 @@ resource "aws_ecs_task_definition" "app_with_docker_volume" {
   memory = var.memory
 
   runtime_platform {
-      cpu_architecture = var.cpu_architecture
+    cpu_architecture = var.cpu_architecture
   }
 
   dynamic "volume" {
@@ -111,9 +115,9 @@ resource "aws_ecs_task_definition" "app_with_docker_volume" {
         for_each = lookup(volume.value, "efs_volume_configuration", [])
 
         content {
-          file_system_id = lookup(efs_volume_configuration.value, "file_system_id", null)
-          root_directory = lookup(efs_volume_configuration.value, "root_directory", null)
-          transit_encryption = lookup(efs_volume_configuration.value, "transit_encryption", null)
+          file_system_id          = lookup(efs_volume_configuration.value, "file_system_id", null)
+          root_directory          = lookup(efs_volume_configuration.value, "root_directory", null)
+          transit_encryption      = lookup(efs_volume_configuration.value, "transit_encryption", null)
           transit_encryption_port = lookup(efs_volume_configuration.value, "transit_encryption_port", null)
         }
       }
@@ -141,6 +145,9 @@ resource "aws_ecs_task_definition" "app_with_docker_volume" {
 
   requires_compatibilities = [var.launch_type]
 
+  # track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state
+  # Useful in the event the task definition is modified outside of this resource
+  track_latest = var.track_latest
+
   tags = var.tags
 }
-

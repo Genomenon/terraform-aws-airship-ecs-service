@@ -313,6 +313,10 @@ module "ecs_task_definition" {
   # list of host paths to add as volumes to the task
   host_path_volumes = var.host_path_volumes
 
+  # track latest `ACTIVE` task definition on AWS or the one created with the resource stored in state
+  # Useful in the event the task definition is modified outside of this resource
+  track_latest = var.track_latest
+
   # propagate tags to task definition
   tags = local.tags
 }
