@@ -30,6 +30,10 @@ output "aws_ecs_task_definition_arn" {
   value = module.ecs_task_definition_selector.selected_task_definition_for_deployment
 }
 
+output "aws_ecs_task_definition_without_revision" {
+  value = module.ecs_task_definition.aws_ecs_task_definition_arn_without_revision
+}
+
 output "aws_ecs_task_definition_family" {
   value = module.ecs_task_definition.aws_ecs_task_definition_family
 }
@@ -37,4 +41,3 @@ output "aws_ecs_task_definition_family" {
 output "has_changed" {
   value = module.ecs_task_definition_selector.has_changed
 }
-
