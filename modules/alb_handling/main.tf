@@ -72,7 +72,8 @@ resource "aws_lb_listener" "nlb_listener" {
   count             = var.create && var.load_balancing_type == "network" ? 1 : 0
   load_balancer_arn = var.lb_arn
   port              = var.nlb_listener_port
-  protocol          = "TCP"
+  protocol          = var.nlb_listener_protocol
+  certificate_arn   = var.nlb_listener_protocol == "HTTPS" || var.nlb_listener_protocol == "TLS" ? var.nlb_certificate_arn : null
 
   default_action {
     target_group_arn = aws_lb_target_group.service_nlb[0].arn
@@ -115,10 +116,10 @@ resource "aws_lb_listener_rule" "host_based_routing" {
 
   condition {
     host_header {
-      values = [local.route53_record_type == "CNAME" ? 
-        join("",aws_route53_record.record.*.fqdn)
+      values = [local.route53_record_type == "CNAME" ?
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -143,9 +144,9 @@ resource "aws_lb_listener_rule" "host_based_routing_redirect_to_https" {
   condition {
     host_header {
       values = [local.route53_record_type == "CNAME" ?
-        join("",aws_route53_record.record.*.fqdn)
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -166,9 +167,9 @@ resource "aws_lb_listener_rule" "host_based_routing_ssl" {
   condition {
     host_header {
       values = [local.route53_record_type == "CNAME" ?
-        join("",aws_route53_record.record.*.fqdn)
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -199,9 +200,9 @@ resource "aws_lb_listener_rule" "host_based_routing_ssl_cognito_auth" {
   condition {
     host_header {
       values = [local.route53_record_type == "CNAME" ?
-        join("",aws_route53_record.record.*.fqdn)
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -296,4 +297,3 @@ resource "aws_lb_listener_rule" "host_based_routing_ssl_custom_listen_host_cogni
     }
   }
 }
-

@@ -10,7 +10,7 @@ variable "load_balancing_type" {
   type = string
 }
 
-# The amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. 
+# The amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds.
 variable "deregistration_delay" {
 }
 
@@ -72,6 +72,16 @@ variable "nlb_listener_port" {
   default = "80"
 }
 
+# nlb_listener_protocol defines the protocol for the Network Load Balancer listener (defaults to TLS)
+variable "nlb_listener_protocol" {
+  default = "TLS"
+}
+
+# nlb_certificate_arn specifies the ARN of the SSL/TLS certificate to use with the NLB listener
+variable "nlb_certificate_arn" {
+  default = ""
+}
+
 # The VPC ID of the VPC where the ALB is residing
 variable "lb_vpc_id" {
   default = ""
@@ -93,13 +103,13 @@ variable "health_matcher" {
   default = "200"
 }
 
-# Route53 Zone to add subdomain to. 
+# Route53 Zone to add subdomain to.
 # Example:
-# 
+#
 # zone-id domain = prod.example.com
-# 
+#
 # Final created subdomain will be [route53_name].prod.example.com
-# 
+#
 variable "route53_zone_id" {
   default = ""
 }
@@ -137,7 +147,7 @@ variable "https_enabled" {
   default = true
 }
 
-# route53_record_identifier, sets the identifier for the route53 record in case the record type is ALIAS 
+# route53_record_identifier, sets the identifier for the route53 record in case the record type is ALIAS
 variable "route53_record_identifier" {
 }
 
@@ -174,4 +184,3 @@ locals {
 
   tags = merge(var.tags, local.name_map)
 }
-

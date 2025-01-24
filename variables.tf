@@ -140,6 +140,22 @@ variable "load_balancing_properties_nlb_listener_port" {
   default     = "80"
 }
 
+variable "load_balancing_properties_nlb_listener_protocol" {
+  type        = string
+  description = "nlb_listener_protocol is the default protocol for the Network Load Balancer listener"
+  default     = "TLS"
+  validation {
+    condition     = contains(["TCP", "TLS", "UDP", "TCP_UDP"], var.load_balancing_properties_nlb_listener_protocol)
+    error_message = "nlb_listener_protocol must be one of: TCP, TLS, UDP, TCP_UDP"
+  }
+}
+
+variable "load_balancing_properties_nlb_certificate_arn" {
+  type        = string
+  description = "nlb_certificate_arn is the certificate to be used with the NLB HTTPS/TLS listener"
+  default     = ""
+}
+
 variable "load_balancing_properties_target_group_port" {
   type        = string
   description = "target_group_port sets the port for the alb or nlb target group, this generally can stay 80 regardless of the service port"

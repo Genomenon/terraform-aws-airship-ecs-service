@@ -120,6 +120,12 @@ module "alb_handling" {
   # nlb_listener_port sets the listener port of the nlb listener
   nlb_listener_port = var.load_balancing_properties_nlb_listener_port
 
+  # Protocol (TCP, TLS, UDP, or TCP_UDP) used by the NLB listener
+  nlb_listener_protocol = var.load_balancing_properties_nlb_listener_protocol
+
+  # TLS certificate ARN to be used by the NLB listener when using TLS protocol
+  nlb_certificate_arn = var.load_balancing_properties_nlb_certificate_arn
+
   # target_group_port sets the port of the target group, by default 80
   target_group_port = var.load_balancing_properties_target_group_port
 
